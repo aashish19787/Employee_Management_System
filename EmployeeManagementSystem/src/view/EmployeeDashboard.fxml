@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.EmployeeDashboardController"
+            style="-fx-background-color: #f5f5f5;"
+            prefWidth="1000" prefHeight="680">
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16"
+              style="-fx-background-color: #528deb; -fx-padding: 14 24;">
+            <Label text="👤 Employee Dashboard"
+                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #FFFFFF;"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label fx:id="empWelcomeLabel" text="Welcome"
+                   style="-fx-font-size: 13px; -fx-text-fill: #cccccc;"/>
+            <Button text="Logout" onAction="#handleLogout"
+                    style="-fx-background-color: #94d941; -fx-text-fill: #FFFFFF;
+                           -fx-border-color: #666666; -fx-border-radius: 3; -fx-background-radius: 3;
+                           -fx-cursor: hand; -fx-padding: 6 14;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-background-color: #f5f5f5;">
+
+            <!-- TAB 1: Dashboard -->
+            <Tab text="  📊 Dashboard  ">
+                <ScrollPane fitToWidth="true" style="-fx-background-color:#f5f5f5;">
+                    <VBox spacing="20" style="-fx-padding: 28;">
+                        <Label text="My Dashboard"
+                               style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+
+                        <HBox spacing="16">
+                            <VBox styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="200" prefHeight="100">
+                                <Label text="Total Tasks" style="-fx-font-size:12px; -fx-text-fill:#666666;"/>
+                                <Label fx:id="empLblTotal"    text="0" style="-fx-font-size:34px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
+                            </VBox>
+                            <VBox styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="200" prefHeight="100">
+                                <Label text="Pending Tasks" style="-fx-font-size:12px; -fx-text-fill:#666666;"/>
+                                <Label fx:id="empLblPending" text="0" style="-fx-font-size:34px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
+                            </VBox>
+                            <VBox styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="200" prefHeight="100">
+                                <Label text="Completed Tasks" style="-fx-font-size:12px; -fx-text-fill:#666666;"/>
+                                <Label fx:id="empLblCompleted" text="0" style="-fx-font-size:34px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
+                            </VBox>
+                            <VBox styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="200" prefHeight="100">
+                                <Label text="Present Days" style="-fx-font-size:12px; -fx-text-fill:#666666;"/>
+                                <Label fx:id="empLblPresent" text="0" style="-fx-font-size:34px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
+                            </VBox>
+                        </HBox>
+
+                        <Label text="Recent Tasks (Last 5)"
+                               style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+                        <TableView fx:id="recentTaskTable" prefHeight="200" style="-fx-background-color:#FFFFFF;">
+                            <columns>
+                                <TableColumn fx:id="colRecentName"   text="Task Name"  prefWidth="200"/>
+                                <TableColumn fx:id="colRecentStatus" text="Status"     prefWidth="130"/>
+                                <TableColumn fx:id="colRecentDesc"   text="Description" prefWidth="400"/>
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <!-- TAB 2: My Tasks -->
+            <Tab text="  ✅ My Tasks  ">
+                <VBox spacing="10" style="-fx-padding: 20; -fx-background-color:#f5f5f5;">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="My Tasks" style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Label text="Filter:" style="-fx-text-fill:#666666;"/>
+                        <ComboBox fx:id="taskFilterCombo" promptText="All Tasks" prefWidth="150"/>
+                        <Button text="↻ Refresh" onAction="#handleRefreshTasks" styleClass="btn-secondary"/>
+                    </HBox>
+
+                    <SplitPane VBox.vgrow="ALWAYS" orientation="HORIZONTAL" dividerPositions="0.55">
+                        <TableView fx:id="myTaskTable" style="-fx-background-color:#FFFFFF;">
+                            <columns>
+                                <TableColumn fx:id="colMyTaskName"   text="Task Name"  prefWidth="180"/>
+                                <TableColumn fx:id="colMyTaskStatus" text="Status"     prefWidth="120"/>
+                            </columns>
+                        </TableView>
+
+                        <!-- Detail Panel -->
+                        <VBox spacing="10" style="-fx-padding: 16; -fx-background-color:#FFFFFF;
+                                                   -fx-border-color:#e0e0e0; -fx-border-width:0 0 0 1;">
+                            <Label text="Task Details" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+                            <Label text="Name:" styleClass="form-label"/>
+                            <Label fx:id="detailTaskName" wrapText="true" style="-fx-text-fill:#333333;"/>
+                            <Label text="Status:" styleClass="form-label"/>
+                            <Label fx:id="detailTaskStatus" style="-fx-text-fill:#333333; -fx-font-weight:bold;"/>
+                            <Label text="Description:" styleClass="form-label"/>
+                            <TextArea fx:id="detailTaskDesc" editable="false" wrapText="true" prefRowCount="6"
+                                      style="-fx-background-color:#f5f5f5;"/>
+                        </VBox>
+                    </SplitPane>
+                </VBox>
+            </Tab>
+
+            <!-- TAB 3: My Attendance -->
+            <Tab text="  📅 My Attendance  ">
+                <VBox spacing="12" style="-fx-padding: 20; -fx-background-color:#f5f5f5;">
+                    <Label text="My Attendance" style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+
+                    <!-- Stats row -->
+                    <HBox spacing="12">
+                        <VBox styleClass="stat-card" spacing="4" alignment="CENTER" prefWidth="155" prefHeight="80">
+                            <Label text="Present"  style="-fx-font-size:11px; -fx-text-fill:#666666;"/>
+                            <Label fx:id="attLblPresent" text="0" style="-fx-font-size:26px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
+                        </VBox>
+                        <VBox styleClass="stat-card" spacing="4" alignment="CENTER" prefWidth="155" prefHeight="80">
+                            <Label text="Leave"    style="-fx-font-size:11px; -fx-text-fill:#666666;"/>
+                            <Label fx:id="attLblLeave" text="0" style="-fx-font-size:26px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
+                        </VBox>
+                        <VBox styleClass="stat-card" spacing="4" alignment="CENTER" prefWidth="155" prefHeight="80">
+                            <Label text="Late"     style="-fx-font-size:11px; -fx-text-fill:#666666;"/>
+                            <Label fx:id="attLblLate" text="0" style="-fx-font-size:26px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
+                        </VBox>
+                        <VBox styleClass="stat-card" spacing="4" alignment="CENTER" prefWidth="155" prefHeight="80">
+                            <Label text="Absent"   style="-fx-font-size:11px; -fx-text-fill:#666666;"/>
+                            <Label fx:id="attLblAbsent" text="0" style="-fx-font-size:26px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
+                        </VBox>
+                        <VBox styleClass="stat-card" spacing="4" alignment="CENTER" prefWidth="180" prefHeight="80">
+                            <Label text="Attendance Rate" style="-fx-font-size:11px; -fx-text-fill:#666666;"/>
+                            <Label fx:id="attLblRate" text="0%" style="-fx-font-size:26px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
+                        </VBox>
+                    </HBox>
+
+                    <TableView fx:id="myAttTable" VBox.vgrow="ALWAYS" style="-fx-background-color:#FFFFFF;">
+                        <columns>
+                            <TableColumn fx:id="colAttDate2"    text="Date"    prefWidth="140"/>
+                            <TableColumn fx:id="colAttStatus2"  text="Status"  prefWidth="120"/>
+                            <TableColumn fx:id="colAttRemarks2" text="Remarks" prefWidth="300"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+
+            <!-- TAB 4: My Profile -->
+            <Tab text="  👤 My Profile  ">
+                <ScrollPane fitToWidth="true" style="-fx-background-color:#f5f5f5;">
+                    <VBox spacing="16" style="-fx-padding:28; -fx-max-width:600;">
+                        <Label text="My Profile"
+                               style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+
+                        <!-- Profile Card -->
+                        <VBox styleClass="stat-card" spacing="10" style="-fx-padding:20;">
+                            <Label text="Personal Information"
+                                   style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+                            <Separator/>
+
+                            <HBox spacing="20">
+                                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                    <Label text="Employee ID" styleClass="form-label"/>
+                                    <Label fx:id="profileId" style="-fx-text-fill:#333333;"/>
+                                    <Label text="Full Name" styleClass="form-label"/>
+                                    <Label fx:id="profileName" style="-fx-text-fill:#333333; -fx-font-weight:bold; -fx-font-size:14px;"/>
+                                    <Label text="Date of Birth" styleClass="form-label"/>
+                                    <Label fx:id="profileDOB" style="-fx-text-fill:#333333;"/>
+                                    <Label text="Contact" styleClass="form-label"/>
+                                    <Label fx:id="profileContact" style="-fx-text-fill:#333333;"/>
+                                    <Label text="Email" styleClass="form-label"/>
+                                    <Label fx:id="profileEmail" style="-fx-text-fill:#333333;"/>
+                                </VBox>
+                                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                    <Label text="Department" styleClass="form-label"/>
+                                    <Label fx:id="profileDept" style="-fx-text-fill:#333333;"/>
+                                    <Label text="Position" styleClass="form-label"/>
+                                    <Label fx:id="profilePos" style="-fx-text-fill:#333333;"/>
+                                    <Label text="Address" styleClass="form-label"/>
+                                    <Label fx:id="profileAddr" wrapText="true" style="-fx-text-fill:#333333;"/>
+                                    <Label text="Total Tasks / Completed" styleClass="form-label"/>
+                                    <Label fx:id="profileTasks" style="-fx-text-fill:#333333;"/>
+                                    <Label text="Attendance Rate" styleClass="form-label"/>
+                                    <Label fx:id="profileAttRate" style="-fx-text-fill:#333333; -fx-font-weight:bold;"/>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+        </TabPane>
+    </center>
+
+</BorderPane>

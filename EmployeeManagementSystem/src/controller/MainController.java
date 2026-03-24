@@ -98,9 +98,9 @@ public class MainController {
         refreshDashboard();
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
+
     // DASHBOARD TAB
-    // ══════════════════════════════════════════════════════════════════════════
+
 
     @FXML
     public void refreshDashboard() {
@@ -114,9 +114,9 @@ public class MainController {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
+
     // EMPLOYEE TAB
-    // ══════════════════════════════════════════════════════════════════════════
+
 
     private void setupEmployeeTab() {
         colEmpId.setCellValueFactory(c -> c.getValue().employeeIdProperty());
@@ -338,9 +338,9 @@ public class MainController {
     private void showEmpError(String msg)  { empErrorLabel.setText("⚠ " + msg); empErrorLabel.setVisible(true); empErrorLabel.setManaged(true); }
     private void hideEmpError()            { empErrorLabel.setVisible(false); empErrorLabel.setManaged(false); }
 
-    // ══════════════════════════════════════════════════════════════════════════
+
     // TASK TAB
-    // ══════════════════════════════════════════════════════════════════════════
+
 
     private void setupTaskTab() {
         taskStatus.getItems().setAll("Pending", "In Progress", "Completed");
@@ -443,9 +443,9 @@ public class MainController {
     private void showTaskError(String msg) { taskErrorLabel.setText("⚠ " + msg); taskErrorLabel.setVisible(true); taskErrorLabel.setManaged(true); }
     private void hideTaskError()           { taskErrorLabel.setVisible(false); taskErrorLabel.setManaged(false); }
 
-    // ══════════════════════════════════════════════════════════════════════════
+
     // ATTENDANCE TAB
-    // ══════════════════════════════════════════════════════════════════════════
+
 
     private void setupAttendanceTab() {
         attStatus.getItems().setAll("Present", "Leave", "Late", "Absent");
@@ -501,9 +501,9 @@ public class MainController {
     private void showAttError(String msg) { attErrorLabel.setText("⚠ " + msg); attErrorLabel.setVisible(true); attErrorLabel.setManaged(true); }
     private void hideAttError()           { attErrorLabel.setVisible(false); attErrorLabel.setManaged(false); }
 
-    // ══════════════════════════════════════════════════════════════════════════
+
     // SHARED HELPERS
-    // ══════════════════════════════════════════════════════════════════════════
+
 
     private void refreshEmployeeDropdowns() {
         try {

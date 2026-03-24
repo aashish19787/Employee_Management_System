@@ -71,9 +71,7 @@ public class EmployeeDashboardController {
         loadProfile();
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
     // DASHBOARD TAB
-    // ══════════════════════════════════════════════════════════════════════════
 
     private void loadDashboard() {
         try {
@@ -105,9 +103,7 @@ public class EmployeeDashboardController {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
     // MY TASKS TAB
-    // ══════════════════════════════════════════════════════════════════════════
 
     private void setupTasksTab() {
         taskFilterCombo.getItems().setAll("All Tasks", "Pending", "In Progress", "Completed");
@@ -159,9 +155,9 @@ public class EmployeeDashboardController {
         loadDashboard();
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
+
     // MY ATTENDANCE TAB
-    // ══════════════════════════════════════════════════════════════════════════
+
 
     private void loadAttendance() {
         try {
@@ -194,9 +190,9 @@ public class EmployeeDashboardController {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
+
     // MY PROFILE TAB
-    // ══════════════════════════════════════════════════════════════════════════
+
 
     private void loadProfile() {
         Employee emp = currentUser.getEmployee();
@@ -225,9 +221,9 @@ public class EmployeeDashboardController {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
+
     // LOGOUT
-    // ══════════════════════════════════════════════════════════════════════════
+
 
     @FXML
     private void handleLogout() {

@@ -15,47 +15,44 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * EmployeeDashboardController — Employee Dashboard.
- *
- * ENCAPSULATION: All fields are private. DAO objects used for DB access.
- * Data is always loaded from MySQL (real-time sync with admin changes).
- */
 public class EmployeeDashboardController {
 
-    // DAOs — always read from MySQL for real-time sync
     private final TaskDAO       taskDAO = new TaskDAO();
     private final AttendanceDAO attDAO  = new AttendanceDAO();
 
     private EmployeeUser currentUser;
     private int employeeId;
 
-    // ─── Dashboard Tab ────────────────────────────────────────────────────────
+    // Dashboard Tab
     @FXML private Label empWelcomeLabel;
-    @FXML private Label empLblTotal, empLblPending, empLblCompleted, empLblPresent;
-    @FXML private TableView<Task>         recentTaskTable;
+    @FXML private Label empLblTotal;
+    @FXML private Label empLblPending;
+    @FXML private Label empLblInProgress;   // matches fx:id in FXML
+    @FXML private Label empLblCompleted;
+    @FXML private Label empLblPresent;
+    @FXML private TableView<Task>          recentTaskTable;
     @FXML private TableColumn<Task,String> colRecentName, colRecentStatus, colRecentDesc;
 
-    // ─── My Tasks Tab ─────────────────────────────────────────────────────────
+    // My Tasks Tab
     @FXML private ComboBox<String> taskFilterCombo;
-    @FXML private TableView<Task>         myTaskTable;
+    @FXML private TableView<Task>          myTaskTable;
     @FXML private TableColumn<Task,String> colMyTaskName, colMyTaskStatus;
-    @FXML private Label   detailTaskName, detailTaskStatus;
+    @FXML private Label    detailTaskName, detailTaskStatus;
     @FXML private TextArea detailTaskDesc;
 
     private ObservableList<Task> allMyTasks = FXCollections.observableArrayList();
 
-    // ─── My Attendance Tab ────────────────────────────────────────────────────
+    // My Attendance Tab
     @FXML private Label attLblPresent, attLblLeave, attLblLate, attLblAbsent, attLblRate;
-    @FXML private TableView<Attendance>         myAttTable;
+    @FXML private TableView<Attendance>          myAttTable;
     @FXML private TableColumn<Attendance,String> colAttDate2, colAttStatus2, colAttRemarks2;
 
-    // ─── My Profile Tab ───────────────────────────────────────────────────────
+    // My Profile Tab
     @FXML private Label profileId, profileName, profileDOB, profileContact;
     @FXML private Label profileEmail, profileDept, profilePos, profileAddr;
     @FXML private Label profileTasks, profileAttRate;
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
 
     public void initEmployeeUser(EmployeeUser user) {
         this.currentUser = user;
@@ -71,23 +68,24 @@ public class EmployeeDashboardController {
         loadProfile();
     }
 
+    // =========================================================================
     // DASHBOARD TAB
+    // =========================================================================
 
     private void loadDashboard() {
         try {
-            int total     = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Pending")
-                    + taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "In Progress")
-                    + taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Completed");
-            int pending   = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Pending");
-            int completed = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Completed");
-            int present   = attDAO.getAttendanceCountByEmployeeAndStatus(employeeId, "Present");
+            int pending    = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Pending");
+            int inProgress = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "In Progress");
+            int completed  = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Completed");
+            int total      = pending + inProgress + completed;
+            int present    = attDAO.getAttendanceCountByEmployeeAndStatus(employeeId, "Present");
 
             empLblTotal.setText(String.valueOf(total));
             empLblPending.setText(String.valueOf(pending));
+            empLblInProgress.setText(String.valueOf(inProgress));
             empLblCompleted.setText(String.valueOf(completed));
             empLblPresent.setText(String.valueOf(present));
 
-            // Recent tasks (last 5)
             colRecentName.setCellValueFactory(c -> c.getValue().taskNameProperty());
             colRecentStatus.setCellValueFactory(c -> c.getValue().statusProperty());
             colRecentDesc.setCellValueFactory(c -> c.getValue().descriptionProperty());
@@ -103,7 +101,9 @@ public class EmployeeDashboardController {
         }
     }
 
+    // =========================================================================
     // MY TASKS TAB
+    // =========================================================================
 
     private void setupTasksTab() {
         taskFilterCombo.getItems().setAll("All Tasks", "Pending", "In Progress", "Completed");
@@ -123,7 +123,6 @@ public class EmployeeDashboardController {
 
     private void loadMyTasks() {
         try {
-            // Real-time sync: always loads from MySQL
             allMyTasks.setAll(taskDAO.getTasksByEmployeeId(employeeId));
         } catch (SQLException e) {
             e.printStackTrace();
@@ -155,9 +154,9 @@ public class EmployeeDashboardController {
         loadDashboard();
     }
 
-
+    // =========================================================================
     // MY ATTENDANCE TAB
-
+    // =========================================================================
 
     private void loadAttendance() {
         try {
@@ -175,11 +174,11 @@ public class EmployeeDashboardController {
             double rate = total > 0 ? (present * 100.0 / total) : 0;
             attLblRate.setText(String.format("%.1f%%", rate));
 
-            colAttDate2.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getAttendanceDate().toString()));
+            colAttDate2.setCellValueFactory(c -> new SimpleStringProperty(
+                    c.getValue().getAttendanceDate().toString()));
             colAttStatus2.setCellValueFactory(c -> c.getValue().statusProperty());
             colAttRemarks2.setCellValueFactory(c -> c.getValue().remarksProperty());
 
-            // Real-time sync: always loads from MySQL
             ObservableList<Attendance> attList = FXCollections.observableArrayList(
                     attDAO.getAttendanceByEmployeeId(employeeId)
             );
@@ -190,9 +189,9 @@ public class EmployeeDashboardController {
         }
     }
 
-
+    // =========================================================================
     // MY PROFILE TAB
-
+    // =========================================================================
 
     private void loadProfile() {
         Employee emp = currentUser.getEmployee();
@@ -206,24 +205,25 @@ public class EmployeeDashboardController {
         profileAddr.setText(emp.getAddress());
 
         try {
-            int total     = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Pending")
-                    + taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "In Progress")
-                    + taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Completed");
-            int completed = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Completed");
-            profileTasks.setText(total + " tasks / " + completed + " completed");
+            int pending    = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Pending");
+            int inProgress = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "In Progress");
+            int completed  = taskDAO.getTaskCountByEmployeeAndStatus(employeeId, "Completed");
+            int total      = pending + inProgress + completed;
 
-            int present   = attDAO.getAttendanceCountByEmployeeAndStatus(employeeId, "Present");
-            int totalAtt  = attDAO.getTotalAttendanceByEmployee(employeeId);
-            double rate   = totalAtt > 0 ? (present * 100.0 / totalAtt) : 0;
+            profileTasks.setText(total + " total  |  " + inProgress + " in progress  |  " + completed + " completed");
+
+            int present  = attDAO.getAttendanceCountByEmployeeAndStatus(employeeId, "Present");
+            int totalAtt = attDAO.getTotalAttendanceByEmployee(employeeId);
+            double rate  = totalAtt > 0 ? (present * 100.0 / totalAtt) : 0;
             profileAttRate.setText(String.format("%.1f%%", rate));
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
+    // =========================================================================
     // LOGOUT
-
+    // =========================================================================
 
     @FXML
     private void handleLogout() {

@@ -8,7 +8,7 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="controller.MainController"
             style="-fx-background-color: #f5f5f5;"
-            prefWidth="1100" prefHeight="720">
+            prefWidth="1200" prefHeight="760">
 
     <!-- TOP BAR -->
     <top>
@@ -31,45 +31,44 @@
         <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE"
                  style="-fx-background-color: #f5f5f5;">
 
-            <!-- TAB 1: Dashboard Overview -->
+            <!-- ═══════════════════════════════════════════════════════ -->
+            <!-- TAB 1: Dashboard                                        -->
+            <!-- ═══════════════════════════════════════════════════════ -->
             <Tab text="  📊 Dashboard  ">
                 <ScrollPane fitToWidth="true" style="-fx-background-color: #f5f5f5;">
                     <VBox spacing="20" style="-fx-padding: 28 28;">
-
                         <Label text="Dashboard Overview"
                                style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333333;"/>
-
-                        <!-- Stats Cards Row -->
                         <HBox spacing="16">
-                            <VBox fx:id="cardTotalEmp" styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="220" prefHeight="110">
+                            <VBox styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="220" prefHeight="110">
                                 <Label text="Total Employees" style="-fx-font-size:13px; -fx-text-fill:#666666;"/>
                                 <Label fx:id="lblTotalEmp" text="0" style="-fx-font-size:36px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
                             </VBox>
-                            <VBox fx:id="cardTotalTasks" styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="220" prefHeight="110">
+                            <VBox styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="220" prefHeight="110">
                                 <Label text="Total Tasks" style="-fx-font-size:13px; -fx-text-fill:#666666;"/>
                                 <Label fx:id="lblTotalTasks" text="0" style="-fx-font-size:36px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
                             </VBox>
-                            <VBox fx:id="cardPending" styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="220" prefHeight="110">
+                            <VBox styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="220" prefHeight="110">
                                 <Label text="Pending Tasks" style="-fx-font-size:13px; -fx-text-fill:#666666;"/>
                                 <Label fx:id="lblPendingTasks" text="0" style="-fx-font-size:36px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
                             </VBox>
-                            <VBox fx:id="cardCompleted" styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="220" prefHeight="110">
+                            <VBox styleClass="stat-card" spacing="6" alignment="CENTER" prefWidth="220" prefHeight="110">
                                 <Label text="Completed Tasks" style="-fx-font-size:13px; -fx-text-fill:#666666;"/>
                                 <Label fx:id="lblCompletedTasks" text="0" style="-fx-font-size:36px; -fx-font-weight:bold; -fx-text-fill:#000000;"/>
                             </VBox>
                         </HBox>
-
-                        <Button text="↻  Refresh Statistics" onAction="#refreshDashboard"
-                                styleClass="btn-secondary"/>
+                        <Button text="↻  Refresh Statistics" onAction="#refreshDashboard" styleClass="btn-secondary"/>
                     </VBox>
                 </ScrollPane>
             </Tab>
 
-            <!-- TAB 2: Employee Management -->
+            <!-- ═══════════════════════════════════════════════════════ -->
+            <!-- TAB 2: Employee Management                              -->
+            <!-- ═══════════════════════════════════════════════════════ -->
             <Tab text="  👥 Employees  ">
                 <HBox spacing="0">
                     <!-- LEFT: Form Panel -->
-                    <ScrollPane fitToWidth="true" prefWidth="360"
+                    <ScrollPane fitToWidth="true" prefWidth="370"
                                 style="-fx-background-color: #FFFFFF; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;">
                         <VBox spacing="12" style="-fx-padding: 20;">
                             <Label text="Employee Details"
@@ -77,49 +76,37 @@
 
                             <Label text="First Name *" styleClass="form-label"/>
                             <TextField fx:id="empFirstName" promptText="First name"/>
-
                             <Label text="Middle Name" styleClass="form-label"/>
                             <TextField fx:id="empMiddleName" promptText="(optional)"/>
-
                             <Label text="Last Name *" styleClass="form-label"/>
                             <TextField fx:id="empLastName" promptText="Last name"/>
-
                             <Label text="Date of Birth *" styleClass="form-label"/>
                             <DatePicker fx:id="empDOB" promptText="Select date" maxWidth="Infinity"/>
-
                             <Label text="Contact Number * (10 digits)" styleClass="form-label"/>
                             <TextField fx:id="empContact" promptText="e.g. 9876543210"/>
-
                             <Label text="Email *" styleClass="form-label"/>
                             <TextField fx:id="empEmail" promptText="email@example.com"/>
-
                             <Label text="Address *" styleClass="form-label"/>
                             <TextArea fx:id="empAddress" promptText="Full address" prefRowCount="2" wrapText="true"/>
-
                             <Label text="Position *" styleClass="form-label"/>
                             <TextField fx:id="empPosition" promptText="e.g. Software Developer"/>
-
                             <Label text="Department *" styleClass="form-label"/>
                             <TextField fx:id="empDepartment" promptText="e.g. IT"/>
 
                             <Separator style="-fx-padding: 4 0;"/>
                             <Label text="Login Credentials"
                                    style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
-
                             <Label text="Username * (min 3 chars)" styleClass="form-label"/>
                             <TextField fx:id="empUsername" promptText="Unique username"/>
-
                             <Label text="Password * (min 6 chars)" styleClass="form-label"/>
                             <TextField fx:id="empPassword" promptText="Password"/>
 
                             <Label fx:id="empErrorLabel" text="" wrapText="true"
                                    style="-fx-text-fill:#333333; -fx-font-size:11px;
-                                          -fx-background-color:#f0f0f0; -fx-padding: 6;
-                                          -fx-border-color:#cccccc; -fx-border-radius:3;"
+                                          -fx-background-color:#fff3cd; -fx-padding: 6;
+                                          -fx-border-color:#ffc107; -fx-border-radius:3;"
                                    managed="false" visible="false"/>
 
-                            <!-- Buttons -->
-                            <!-- Buttons -->
                             <VBox spacing="8">
                                 <HBox spacing="8">
                                     <Button text="Add Employee" onAction="#handleAddEmployee" styleClass="btn-primary"
@@ -139,30 +126,37 @@
 
                     <!-- RIGHT: Table Panel -->
                     <VBox spacing="10" HBox.hgrow="ALWAYS" style="-fx-padding: 20; -fx-background-color: #f5f5f5;">
+                        <!-- UPDATED: Search + Department Filter row -->
                         <HBox spacing="10" alignment="CENTER_LEFT">
                             <Label text="All Employees" style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
                             <Pane HBox.hgrow="ALWAYS"/>
-                            <TextField fx:id="empSearch" promptText="🔍 Search by name..." prefWidth="200"
+                            <!-- NEW: Department filter -->
+                            <ComboBox fx:id="empFilterDept" promptText="All Departments" prefWidth="160"
+                                      style="-fx-border-color:#cccccc; -fx-border-radius:3; -fx-background-color:#FFFFFF;"/>
+                            <!-- UPDATED: Search by all fields -->
+                            <TextField fx:id="empSearch" promptText="🔍 Search employees..." prefWidth="220"
                                        style="-fx-padding: 6 10; -fx-border-color:#cccccc; -fx-border-radius:3;
                                               -fx-background-color:#FFFFFF;"/>
                         </HBox>
 
                         <TableView fx:id="empTable" VBox.vgrow="ALWAYS" style="-fx-background-color:#FFFFFF;">
                             <columns>
-                                <TableColumn fx:id="colEmpId"     text="ID"         prefWidth="50"/>
-                                <TableColumn fx:id="colEmpFirst"  text="First Name"  prefWidth="110"/>
-                                <TableColumn fx:id="colEmpLast"   text="Last Name"   prefWidth="110"/>
-                                <TableColumn fx:id="colEmpContact" text="Contact"    prefWidth="110"/>
-                                <TableColumn fx:id="colEmpEmail"  text="Email"       prefWidth="170"/>
-                                <TableColumn fx:id="colEmpPos"    text="Position"    prefWidth="130"/>
-                                <TableColumn fx:id="colEmpDept"   text="Department"  prefWidth="120"/>
+                                <TableColumn fx:id="colEmpId"      text="ID"          prefWidth="50"/>
+                                <TableColumn fx:id="colEmpFirst"   text="First Name"  prefWidth="110"/>
+                                <TableColumn fx:id="colEmpLast"    text="Last Name"   prefWidth="110"/>
+                                <TableColumn fx:id="colEmpContact" text="Contact"     prefWidth="110"/>
+                                <TableColumn fx:id="colEmpEmail"   text="Email"       prefWidth="180"/>
+                                <TableColumn fx:id="colEmpPos"     text="Position"    prefWidth="130"/>
+                                <TableColumn fx:id="colEmpDept"    text="Department"  prefWidth="120"/>
                             </columns>
                         </TableView>
                     </VBox>
                 </HBox>
             </Tab>
 
-            <!-- TAB 3: Task Management -->
+            <!-- ═══════════════════════════════════════════════════════ -->
+            <!-- TAB 3: Task Management                                  -->
+            <!-- ═══════════════════════════════════════════════════════ -->
             <Tab text="  ✅ Tasks  ">
                 <HBox spacing="0">
                     <!-- LEFT: Task Form -->
@@ -172,24 +166,22 @@
                             <Label text="Task Details"
                                    style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
 
-                            <Label text="Task Name *" styleClass="form-label"/>
+                            <Label text="Task Name * (max 100 chars)" styleClass="form-label"/>
                             <TextField fx:id="taskName" promptText="Task name"/>
 
-                            <Label text="Description *" styleClass="form-label"/>
-                            <TextArea fx:id="taskDesc" promptText="Task description" prefRowCount="3" wrapText="true"/>
+                            <Label text="Description * (max 1000 chars)" styleClass="form-label"/>
+                            <TextArea fx:id="taskDesc" promptText="Task description" prefRowCount="4" wrapText="true"/>
 
                             <Label text="Status *" styleClass="form-label"/>
-                            <ComboBox fx:id="taskStatus" maxWidth="Infinity"
-                                      promptText="Select status"/>
+                            <ComboBox fx:id="taskStatus" maxWidth="Infinity" promptText="Select status"/>
 
                             <Label text="Assigned Employee *" styleClass="form-label"/>
-                            <ComboBox fx:id="taskEmployee" maxWidth="Infinity"
-                                      promptText="Select employee"/>
+                            <ComboBox fx:id="taskEmployee" maxWidth="Infinity" promptText="Select employee"/>
 
                             <Label fx:id="taskErrorLabel" text="" wrapText="true"
                                    style="-fx-text-fill:#333333; -fx-font-size:11px;
-                                          -fx-background-color:#f0f0f0; -fx-padding:6;
-                                          -fx-border-color:#cccccc; -fx-border-radius:3;"
+                                          -fx-background-color:#fff3cd; -fx-padding:6;
+                                          -fx-border-color:#ffc107; -fx-border-radius:3;"
                                    managed="false" visible="false"/>
 
                             <HBox spacing="8">
@@ -203,29 +195,42 @@
 
                     <!-- RIGHT: Task Table -->
                     <VBox spacing="10" HBox.hgrow="ALWAYS" style="-fx-padding:20; -fx-background-color:#f5f5f5;">
-                        <Label text="All Tasks" style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+                        <!-- NEW: Task search bar -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="All Tasks" style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+                            <Pane HBox.hgrow="ALWAYS"/>
+                            <TextField fx:id="taskSearch" promptText="🔍 Search tasks..." prefWidth="260"
+                                       style="-fx-padding: 6 10; -fx-border-color:#cccccc; -fx-border-radius:3;
+                                              -fx-background-color:#FFFFFF;"/>
+                        </HBox>
+
                         <TableView fx:id="taskTable" VBox.vgrow="ALWAYS" style="-fx-background-color:#FFFFFF;">
                             <columns>
-                                <TableColumn fx:id="colTaskId"   text="ID"          prefWidth="50"/>
-                                <TableColumn fx:id="colTaskName" text="Task Name"   prefWidth="160"/>
-                                <TableColumn fx:id="colTaskDesc" text="Description" prefWidth="220"/>
-                                <TableColumn fx:id="colTaskStatus" text="Status"    prefWidth="110"/>
-                                <TableColumn fx:id="colTaskEmp" text="Employee"     prefWidth="150"/>
+                                <TableColumn fx:id="colTaskId"     text="ID"          prefWidth="50"/>
+                                <TableColumn fx:id="colTaskName"   text="Task Name"   prefWidth="160"/>
+                                <TableColumn fx:id="colTaskDesc"   text="Description" prefWidth="230"/>
+                                <TableColumn fx:id="colTaskStatus" text="Status"      prefWidth="110"/>
+                                <TableColumn fx:id="colTaskEmp"    text="Employee"    prefWidth="160"/>
                             </columns>
                         </TableView>
                     </VBox>
                 </HBox>
             </Tab>
 
-            <!-- TAB 4: Attendance -->
+            <!-- ═══════════════════════════════════════════════════════ -->
+            <!-- TAB 4: Attendance                                       -->
+            <!-- ═══════════════════════════════════════════════════════ -->
             <Tab text="  📅 Attendance  ">
                 <HBox spacing="0">
-                    <!-- LEFT: Attendance Form -->
-                    <VBox spacing="12" prefWidth="300"
+                    <!-- LEFT: Attendance Form (Mark + Update + Delete) -->
+                    <VBox spacing="12" prefWidth="320"
                           style="-fx-padding:20; -fx-background-color:#FFFFFF;
                                  -fx-border-color:#e0e0e0; -fx-border-width: 0 1 0 0;">
-                        <Label text="Mark Attendance"
+
+                        <Label text="Attendance Form"
                                style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+                        <Label text="Select a row to update or delete it."
+                               style="-fx-font-size:11px; -fx-text-fill:#888888;"/>
 
                         <Label text="Employee *" styleClass="form-label"/>
                         <ComboBox fx:id="attEmployee" maxWidth="Infinity" promptText="Select employee"/>
@@ -241,24 +246,43 @@
 
                         <Label fx:id="attErrorLabel" text="" wrapText="true"
                                style="-fx-text-fill:#333333; -fx-font-size:11px;
-                                      -fx-background-color:#f0f0f0; -fx-padding:6;
-                                      -fx-border-color:#cccccc; -fx-border-radius:3;"
+                                      -fx-background-color:#fff3cd; -fx-padding:6;
+                                      -fx-border-color:#ffc107; -fx-border-radius:3;"
                                managed="false" visible="false"/>
 
-                        <Button text="Mark Attendance" onAction="#handleMarkAttendance"
-                                maxWidth="Infinity" styleClass="btn-primary"/>
+                        <!-- UPDATED: Mark + Update + Delete + Clear buttons -->
+                        <VBox spacing="8">
+                            <Button text="Mark Attendance"   onAction="#handleMarkAttendance"
+                                    maxWidth="Infinity" styleClass="btn-primary" minHeight="34"/>
+                            <HBox spacing="8">
+                                <Button text="Update Record" onAction="#handleUpdateAttendance"
+                                        styleClass="btn-secondary" HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="34"/>
+                                <Button text="Delete Record" onAction="#handleDeleteAttendance"
+                                        styleClass="btn-danger" HBox.hgrow="ALWAYS" maxWidth="Infinity" minHeight="34"/>
+                            </HBox>
+                            <Button text="Clear Form" onAction="#handleClearAttendance"
+                                    maxWidth="Infinity" styleClass="btn-secondary" minHeight="34"/>
+                        </VBox>
                     </VBox>
 
-                    <!-- RIGHT: Attendance Table -->
+                    <!-- RIGHT: Attendance Table with Filter -->
                     <VBox spacing="10" HBox.hgrow="ALWAYS" style="-fx-padding:20; -fx-background-color:#f5f5f5;">
-                        <Label text="Attendance Records"
-                               style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+                        <!-- NEW: Filter by Employee row -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Attendance Records"
+                                   style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#333333;"/>
+                            <Pane HBox.hgrow="ALWAYS"/>
+                            <Label text="Filter by Employee:" style="-fx-text-fill:#666666; -fx-font-size:12px;"/>
+                            <ComboBox fx:id="attFilterEmployee" promptText="All Employees" prefWidth="200"
+                                      style="-fx-border-color:#cccccc; -fx-border-radius:3; -fx-background-color:#FFFFFF;"/>
+                        </HBox>
+
                         <TableView fx:id="attTable" VBox.vgrow="ALWAYS" style="-fx-background-color:#FFFFFF;">
                             <columns>
-                                <TableColumn fx:id="colAttEmp"     text="Employee"  prefWidth="160"/>
+                                <TableColumn fx:id="colAttEmp"     text="Employee"  prefWidth="170"/>
                                 <TableColumn fx:id="colAttDate"    text="Date"      prefWidth="110"/>
                                 <TableColumn fx:id="colAttStatus"  text="Status"    prefWidth="100"/>
-                                <TableColumn fx:id="colAttRemarks" text="Remarks"   prefWidth="200"/>
+                                <TableColumn fx:id="colAttRemarks" text="Remarks"   prefWidth="240"/>
                             </columns>
                         </TableView>
                     </VBox>
@@ -267,5 +291,4 @@
 
         </TabPane>
     </center>
-
 </BorderPane>

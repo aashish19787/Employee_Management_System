@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * ABSTRACTION: EmployeeDAO hides all SQL complexity behind simple method calls.
- * ENCAPSULATION: Database logic is contained within this class.
+ * UPDATED: Added searchEmployees() for full server-side search across all fields.
  */
 public class EmployeeDAO {
 
@@ -18,9 +18,7 @@ public class EmployeeDAO {
         return DatabaseConnection.getInstance().getConnection();
     }
 
-    /**
-     * ABSTRACTION: Adds a new employee and returns the generated employee_id.
-     */
+    /** Adds a new employee and returns the generated employee_id. */
     public int addEmployee(String firstName, String middleName, String lastName,
                            LocalDate dob, String contactNo, String email,
                            String address, String position, String department) throws SQLException {
@@ -43,9 +41,7 @@ public class EmployeeDAO {
         }
     }
 
-    /**
-     * ABSTRACTION: Updates an existing employee record.
-     */
+    /** Updates an existing employee record. */
     public boolean updateEmployee(int employeeId, String firstName, String middleName, String lastName,
                                   LocalDate dob, String contactNo, String email,
                                   String address, String position, String department) throws SQLException {
@@ -67,46 +63,31 @@ public class EmployeeDAO {
     }
 
     /**
-     * ABSTRACTION: CASCADE DELETE — removes all employee data in a transaction.
-     * Deletes: users → tasks → attendance → employees
-     * Ensures ATOMICITY: all or nothing.
+     * CASCADE DELETE — removes all employee data in a transaction.
+     * Deletes: users → tasks → attendance → employees (atomically).
      */
     public boolean deleteEmployee(int employeeId) {
         Connection conn = getConn();
         try {
-            conn.setAutoCommit(false); // Start transaction
-
-            // Step 1: Delete user credentials
+            conn.setAutoCommit(false);
             try (PreparedStatement ps = conn.prepareStatement(
                     "DELETE FROM users WHERE employee_id = ? AND user_type = 'EMPLOYEE'")) {
-                ps.setInt(1, employeeId);
-                ps.executeUpdate();
+                ps.setInt(1, employeeId); ps.executeUpdate();
             }
-
-            // Step 2: Delete tasks
             try (PreparedStatement ps = conn.prepareStatement(
                     "DELETE FROM tasks WHERE employee_id = ?")) {
-                ps.setInt(1, employeeId);
-                ps.executeUpdate();
+                ps.setInt(1, employeeId); ps.executeUpdate();
             }
-
-            // Step 3: Delete attendance records
             try (PreparedStatement ps = conn.prepareStatement(
                     "DELETE FROM attendance WHERE employee_id = ?")) {
-                ps.setInt(1, employeeId);
-                ps.executeUpdate();
+                ps.setInt(1, employeeId); ps.executeUpdate();
             }
-
-            // Step 4: Delete employee record
             try (PreparedStatement ps = conn.prepareStatement(
                     "DELETE FROM employees WHERE employee_id = ?")) {
-                ps.setInt(1, employeeId);
-                ps.executeUpdate();
+                ps.setInt(1, employeeId); ps.executeUpdate();
             }
-
-            conn.commit(); // Commit all changes atomically
+            conn.commit();
             return true;
-
         } catch (SQLException e) {
             try { conn.rollback(); } catch (SQLException ignored) {}
             e.printStackTrace();
@@ -116,24 +97,38 @@ public class EmployeeDAO {
         }
     }
 
-    /**
-     * ABSTRACTION: Retrieves all employees from the database.
-     */
+    /** Retrieves all employees from the database. */
     public List<Employee> getAllEmployees() throws SQLException {
         List<Employee> list = new ArrayList<>();
         String sql = "SELECT * FROM employees ORDER BY last_name, first_name";
         try (Statement st = getConn().createStatement();
              ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) {
-                list.add(mapRow(rs));
-            }
+            while (rs.next()) list.add(mapRow(rs));
         }
         return list;
     }
 
     /**
-     * ABSTRACTION: Retrieves a single employee by ID.
+     * NEW — Server-side full-text search across name, email, contact, position, department.
      */
+    public List<Employee> searchEmployees(String keyword) throws SQLException {
+        List<Employee> list = new ArrayList<>();
+        String sql = "SELECT * FROM employees WHERE " +
+                "first_name LIKE ? OR last_name LIKE ? OR middle_name LIKE ? " +
+                "OR email LIKE ? OR contact_no LIKE ? " +
+                "OR position LIKE ? OR department LIKE ? " +
+                "ORDER BY last_name, first_name";
+        String like = "%" + keyword + "%";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            for (int i = 1; i <= 7; i++) ps.setString(i, like);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        }
+        return list;
+    }
+
+    /** Retrieves a single employee by ID. */
     public Employee getEmployeeById(int employeeId) throws SQLException {
         String sql = "SELECT * FROM employees WHERE employee_id = ?";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
@@ -145,33 +140,23 @@ public class EmployeeDAO {
         return null;
     }
 
-    public boolean isEmailExists(String email) throws SQLException {
-        return isEmailExists(email, -1);
-    }
+    public boolean isEmailExists(String email) throws SQLException { return isEmailExists(email, -1); }
 
     public boolean isEmailExists(String email, int excludeId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM employees WHERE email = ? AND employee_id != ?";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-            ps.setString(1, email);
-            ps.setInt(2, excludeId);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() && rs.getInt(1) > 0;
-            }
+            ps.setString(1, email); ps.setInt(2, excludeId);
+            try (ResultSet rs = ps.executeQuery()) { return rs.next() && rs.getInt(1) > 0; }
         }
     }
 
-    public boolean isContactExists(String contact) throws SQLException {
-        return isContactExists(contact, -1);
-    }
+    public boolean isContactExists(String contact) throws SQLException { return isContactExists(contact, -1); }
 
     public boolean isContactExists(String contact, int excludeId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM employees WHERE contact_no = ? AND employee_id != ?";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-            ps.setString(1, contact);
-            ps.setInt(2, excludeId);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() && rs.getInt(1) > 0;
-            }
+            ps.setString(1, contact); ps.setInt(2, excludeId);
+            try (ResultSet rs = ps.executeQuery()) { return rs.next() && rs.getInt(1) > 0; }
         }
     }
 
@@ -182,7 +167,6 @@ public class EmployeeDAO {
         }
     }
 
-    /** Map ResultSet row → Employee object */
     private Employee mapRow(ResultSet rs) throws SQLException {
         return new Employee(
                 rs.getInt("employee_id"),
@@ -198,3 +182,5 @@ public class EmployeeDAO {
         );
     }
 }
+
+

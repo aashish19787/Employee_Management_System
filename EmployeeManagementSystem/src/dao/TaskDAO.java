@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * ABSTRACTION: TaskDAO encapsulates all task-related database operations.
+ * UPDATED: Added searchTasks() for task list search requirement.
  */
 public class TaskDAO {
 
@@ -16,9 +17,7 @@ public class TaskDAO {
         return DatabaseConnection.getInstance().getConnection();
     }
 
-    /**
-     * ABSTRACTION: Adds a new task and returns the generated task_id.
-     */
+    /** Adds a new task and returns the generated task_id. */
     public int addTask(String taskName, String description, String status, int employeeId) throws SQLException {
         String sql = "INSERT INTO tasks (task_name, description, status, employee_id) VALUES (?,?,?,?)";
         try (PreparedStatement ps = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -32,9 +31,7 @@ public class TaskDAO {
         }
     }
 
-    /**
-     * ABSTRACTION: Updates an existing task.
-     */
+    /** Updates an existing task. */
     public boolean updateTask(int taskId, String taskName, String description, String status, int employeeId) throws SQLException {
         String sql = "UPDATE tasks SET task_name=?, description=?, status=?, employee_id=? WHERE task_id=?";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
@@ -54,10 +51,7 @@ public class TaskDAO {
         }
     }
 
-    /**
-     * ABSTRACTION: Gets all tasks for a specific employee (used by employee dashboard).
-     * Real-time data sync — always reads from MySQL.
-     */
+    /** Gets all tasks for a specific employee (employee dashboard). */
     public List<Task> getTasksByEmployeeId(int employeeId) throws SQLException {
         List<Task> list = new ArrayList<>();
         String sql = "SELECT t.*, CONCAT(e.first_name, ' ', e.last_name) AS emp_name " +
@@ -72,9 +66,7 @@ public class TaskDAO {
         return list;
     }
 
-    /**
-     * ABSTRACTION: Gets ALL tasks (used by admin dashboard).
-     */
+    /** Gets ALL tasks (admin dashboard). */
     public List<Task> getAllTasks() throws SQLException {
         List<Task> list = new ArrayList<>();
         String sql = "SELECT t.*, CONCAT(e.first_name, ' ', e.last_name) AS emp_name " +
@@ -85,6 +77,44 @@ public class TaskDAO {
             while (rs.next()) list.add(mapRow(rs));
         }
         return list;
+    }
+
+    /**
+     * NEW — Search tasks by name, description, status, or assigned employee name.
+     * Searches server-side with LIKE for all matching tasks.
+     */
+    public List<Task> searchTasks(String keyword) throws SQLException {
+        List<Task> list = new ArrayList<>();
+        String sql = "SELECT t.*, CONCAT(e.first_name, ' ', e.last_name) AS emp_name " +
+                "FROM tasks t JOIN employees e ON t.employee_id = e.employee_id " +
+                "WHERE t.task_name LIKE ? OR t.description LIKE ? OR t.status LIKE ? " +
+                "   OR CONCAT(e.first_name, ' ', e.last_name) LIKE ? " +
+                "ORDER BY t.task_id DESC";
+        String like = "%" + keyword + "%";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setString(1, like);
+            ps.setString(2, like);
+            ps.setString(3, like);
+            ps.setString(4, like);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * NEW — Validate that task name is not a duplicate (optionally excluding a task ID on update).
+     */
+    public boolean isTaskNameExists(String taskName, int excludeId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM tasks WHERE task_name = ? AND task_id != ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setString(1, taskName);
+            ps.setInt(2, excludeId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
     }
 
     public int getTotalTaskCount() throws SQLException {

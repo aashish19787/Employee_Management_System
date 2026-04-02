@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * ABSTRACTION: AttendanceDAO encapsulates all attendance-related database operations.
+ * UPDATED: Added updateAttendance(), deleteAttendance(), getAttendanceByEmployeeIdFiltered()
  */
 public class AttendanceDAO {
 
@@ -17,9 +18,7 @@ public class AttendanceDAO {
         return DatabaseConnection.getInstance().getConnection();
     }
 
-    /**
-     * ABSTRACTION: Marks attendance for an employee on a given date.
-     */
+    /** Mark attendance for an employee on a given date. */
     public boolean markAttendance(int employeeId, LocalDate date, String status, String remarks) throws SQLException {
         String sql = "INSERT INTO attendance (employee_id, attendance_date, status, remarks) VALUES (?,?,?,?)";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
@@ -32,8 +31,30 @@ public class AttendanceDAO {
     }
 
     /**
-     * ABSTRACTION: Checks if attendance already exists for employee on a date (prevent duplicates).
+     * NEW — Update an existing attendance record's status and remarks.
      */
+    public boolean updateAttendance(int attendanceId, String status, String remarks) throws SQLException {
+        String sql = "UPDATE attendance SET status = ?, remarks = ? WHERE attendance_id = ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setString(2, remarks == null || remarks.isBlank() ? null : remarks);
+            ps.setInt(3, attendanceId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * NEW — Delete a specific attendance record by ID.
+     */
+    public boolean deleteAttendance(int attendanceId) throws SQLException {
+        String sql = "DELETE FROM attendance WHERE attendance_id = ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, attendanceId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /** Check if attendance already exists for employee on a date (prevent duplicates). */
     public boolean attendanceExists(int employeeId, LocalDate date) throws SQLException {
         String sql = "SELECT COUNT(*) FROM attendance WHERE employee_id = ? AND attendance_date = ?";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
@@ -45,10 +66,20 @@ public class AttendanceDAO {
         }
     }
 
-    /**
-     * ABSTRACTION: Gets all attendance records for a specific employee.
-     * Real-time data sync — always loads from MySQL.
-     */
+    /** Check duplicate excluding the record being updated. */
+    public boolean attendanceExistsExcluding(int employeeId, LocalDate date, int excludeId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM attendance WHERE employee_id = ? AND attendance_date = ? AND attendance_id != ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, employeeId);
+            ps.setDate(2, Date.valueOf(date));
+            ps.setInt(3, excludeId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    /** Gets all attendance records for a specific employee. */
     public List<Attendance> getAttendanceByEmployeeId(int employeeId) throws SQLException {
         List<Attendance> list = new ArrayList<>();
         String sql = "SELECT a.*, CONCAT(e.first_name, ' ', e.last_name) AS emp_name " +
@@ -63,9 +94,7 @@ public class AttendanceDAO {
         return list;
     }
 
-    /**
-     * ABSTRACTION: Gets ALL attendance records (admin view).
-     */
+    /** Gets ALL attendance records (admin view — no filter). */
     public List<Attendance> getAllAttendance() throws SQLException {
         List<Attendance> list = new ArrayList<>();
         String sql = "SELECT a.*, CONCAT(e.first_name, ' ', e.last_name) AS emp_name " +
@@ -76,6 +105,15 @@ public class AttendanceDAO {
             while (rs.next()) list.add(mapRow(rs));
         }
         return list;
+    }
+
+    /**
+     * NEW — Filter attendance by a specific employee (admin view).
+     * Pass employeeId = -1 to get all records.
+     */
+    public List<Attendance> getAttendanceFiltered(int employeeId) throws SQLException {
+        if (employeeId == -1) return getAllAttendance();
+        return getAttendanceByEmployeeId(employeeId);
     }
 
     public int getAttendanceCountByEmployeeAndStatus(int employeeId, String status) throws SQLException {
@@ -110,3 +148,4 @@ public class AttendanceDAO {
         );
     }
 }
+
